@@ -28,6 +28,10 @@ public final class DarwinPeripheral: NSObject, PeripheralProtocol, CBPeripheralM
         return unsafeBitCast(internalManager.state, to: DarwinBluetoothState.self)
     }
     
+    public var didConnect: ((String) -> Void)?
+    
+    public var didDisconnect: ((String) -> Void)?
+    
     public var willRead: ((GATTReadRequest<Central>) -> ATTError?)?
     
     public var willWrite: ((GATTWriteRequest<Central>) -> ATTError?)?
@@ -353,12 +357,16 @@ public final class DarwinPeripheral: NSObject, PeripheralProtocol, CBPeripheralM
     public func peripheralManager(_ peripheral: CBPeripheralManager, central: CBCentral, didSubscribeTo characteristic: CBCharacteristic) {
         
         log?("Central \(central.gattIdentifier) did subscribe to \(characteristic.uuid)")
+
+        didConnect?(central.gattIdentifier.uuidString)
     }
     
     @objc
     public func peripheralManager(_ peripheral: CBPeripheralManager, central: CBCentral, didUnsubscribeFrom characteristic: CBCharacteristic) {
         
         log?("Central \(central.gattIdentifier) did unsubscribe from \(characteristic.uuid)")
+
+        didDisconnect?(central.gattIdentifier.uuidString)
     }
     
     @objc

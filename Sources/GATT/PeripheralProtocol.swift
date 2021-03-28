@@ -41,6 +41,10 @@ public protocol PeripheralProtocol: class {
     /// Clears the local GATT database.
     func removeAllServices()
     
+    var didConnect: ((String) -> Void)? { get set }
+    
+    var didDisconnect: ((String) -> Void)? { get set }
+    
     var willRead: ((GATTReadRequest<Central>) -> ATTError?)? { get set }
     
     var willWrite: ((GATTWriteRequest<Central>) -> ATTError?)? { get set }

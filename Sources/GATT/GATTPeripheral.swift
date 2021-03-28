@@ -23,6 +23,10 @@ public final class GATTPeripheral <HostController: BluetoothHostControllerInterf
     
     public let controller: HostController
     
+    public var didConnect: ((String) -> Void)?
+    
+    public var didDisconnect: ((String) -> Void)?
+    
     public var willRead: ((GATTReadRequest<Central>) -> ATTError?)?
     
     public var willWrite: ((GATTWriteRequest<Central>) -> ATTError?)?
@@ -174,6 +178,7 @@ public final class GATTPeripheral <HostController: BluetoothHostControllerInterf
                 // hold strong reference to connection
                 connectionsQueue.sync { [unowned self] in
                     self.connections[connectionIdentifier] = connection
+                    self.didConnect?(connection.central.identifier.rawValue)
                 }
             }
                 
@@ -195,6 +200,7 @@ public final class GATTPeripheral <HostController: BluetoothHostControllerInterf
         
         // remove from peripheral, release and close socket
         connectionsQueue.sync { [unowned self] in
+            if let conn = self.connections[connection] { self.didDisconnect?(conn.central.identifier.rawValue) }
             self.connections[connection] = nil
         }
         
